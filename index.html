@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZIP2WEB | EdgeOne Deployment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/tokyo-night-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020202; 
+            color: #f3f4f6;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #020202; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #111827; border-radius: 10px; }
+
+        .kinetic-container {
+            background-color: #080808;
+            border: 1px solid rgba(20, 184, 166, 0.3);
+            border-radius: 24px; 
+            padding: 24px;
+            box-shadow: 0 0 30px rgba(20, 184, 166, 0.05), 0 10px 50px rgba(0, 0, 0, 0.8);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .branding-section {
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-circle-wrapper {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            padding: 4px;
+            background: conic-gradient(from 0deg, transparent 60%, #14b8a6 100%);
+            animation: rotate 3s linear infinite;
+            box-shadow: 0 0 40px rgba(20, 184, 166, 0.3);
+        }
+
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .brand-circle {
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: rotate-reverse 3s linear infinite;
+        }
+
+        @keyframes rotate-reverse { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+
+        .brand-circle img { width: 100%; height: 100%; object-fit: cover; }
+
+        .terminal-box {
+            background: #050505;
+            border: 1px solid #1a1a1a;
+            border-radius: 12px;
+            font-family: 'Fira Code', monospace;
+            padding: 15px;
+            height: 320px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+            color: #14b8a6;
+        }
+
+        .deploy-btn {
+            background: linear-gradient(135deg, #14b8a6, #0d9488);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 20px -5px rgba(20, 184, 166, 0.5);
+        }
+        .deploy-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 12px 25px -5px rgba(20, 184, 166, 0.7); }
+        .deploy-btn:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
+
+        .log-line { margin-bottom: 4px; border-left: 2px solid #111; padding-left: 10px; }
+        .log-error { color: #ef4444; border-left-color: #ef4444; }
+        .log-success { color: #10b981; border-left-color: #10b981; }
+        .log-info { color: #3b82f6; border-left-color: #3b82f6; }
+
+        .file-drop {
+            border: 2px dashed #222;
+            transition: all 0.3s ease;
+        }
+        .file-drop:hover { border-color: #14b8a6; background: rgba(20, 184, 166, 0.02); }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-in { animation: slideIn 0.4s ease forwards; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col p-4 md:p-8">
+
+    <header class="max-w-6xl mx-auto w-full flex items-center justify-between mb-12">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-teal-500/20 border border-teal-500/40 rounded-xl flex items-center justify-center">
+                <i class="fa-solid fa-bolt-lightning text-teal-400"></i>
+            </div>
+            <div>
+                <h1 class="text-2xl font-black tracking-tighter text-white uppercase italic">ZIP2<span class="text-teal-500">WEB</span></h1>
+                <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-[0.2em]">EdgeOne Cloud Infrastructure</p>
+            </div>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <div class="text-right">
+                <p class="text-[10px] text-zinc-500 font-bold uppercase">Operator</p>
+                <p class="text-xs font-bold text-white tracking-wide">zimob</p>
+            </div>
+            <div class="h-8 w-[1px] bg-white/10"></div>
+            <div class="text-right">
+                <p class="text-[10px] text-zinc-500 font-bold uppercase">Edge Domain</p>
+                <p class="text-[10px] font-bold text-teal-500 tracking-wide">zip2web.edgeone.dev</p>
+            </div>
+        </div>
+    </header>
+
+    <main id="root" class="max-w-6xl mx-auto w-full flex-1"></main>
+
+    <footer class="mt-12 text-center">
+        <p class="text-[10px] text-zinc-700 font-black uppercase tracking-[0.4em]">
+            ZIP2WEB Engine • Powered by Tencent Cloud EdgeOne • Minotaur v4.0
+        </p>
+    </footer>
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+    <script>
+        const { useState, useRef, useEffect } = React;
+
+        const DeveloperCard = () => {
+            return React.createElement('div', { className: 'kinetic-container h-full animate-in flex flex-col justify-center py-12' },
+                React.createElement('div', { className: 'branding-section mb-8' },
+                    React.createElement('div', { className: 'brand-circle-wrapper' },
+                        React.createElement('div', { className: 'brand-circle' },
+                            React.createElement('img', { src: 'https://i.imgur.com/cPwxT0y.png', alt: 'zimob' })
+                        )
+                    )
+                ),
+                React.createElement('div', { className: 'text-center' },
+                    React.createElement('div', { className: 'inline-block px-4 py-1.5 bg-teal-500/10 border border-teal-500/20 rounded-full mb-4' },
+                        React.createElement('span', { className: 'text-[11px] font-black text-teal-400 uppercase tracking-widest' }, 'Lead Architect')
+                    ),
+                    React.createElement('h2', { className: 'text-3xl font-extrabold text-white mb-2' }, 'zimob'),
+                    React.createElement('p', { className: 'text-zinc-500 text-sm font-medium uppercase tracking-widest' }, 'Minotaur Team Leader')
+                )
+            );
+        };
+
+        const ControlPanel = () => {
+            const [status, setStatus] = useState('READY');
+            const [logs, setLogs] = useState([
+                { msg: '[SYS] Tencent Cloud EdgeOne SDK Initialized', type: 'info' },
+                { msg: '[SYS] Connected to zip2web.edgeone.dev', type: 'normal' }
+            ]);
+            const [deployUrl, setDeployUrl] = useState('');
+            const [fileName, setFileName] = useState('');
+            const fileInputRef = useRef(null);
+            const terminalRef = useRef(null);
+
+            useEffect(() => {
+                if (terminalRef.current) {
+                    terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+                }
+            }, [logs]);
+
+            const addLog = (msg, type = 'normal') => {
+                const time = new Date().toLocaleTimeString('en-GB', { hour12: false });
+                setLogs(prev => [...prev, { msg: `[${time}] ${msg}`, type }]);
+            };
+
+            const handleFile = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    setFileName(file.name);
+                    addLog(`Payload Ready: ${file.name}`);
+                }
+            };
+
+            const handleDeploy = async () => {
+                const file = fileInputRef.current?.files[0];
+                if (!file) { addLog('!! ERROR: NO DEPLOYMENT PACKAGE FOUND', 'error'); return; }
+
+                setStatus('DEPLOYING');
+                addLog('Initiating EdgeOne Transmission...', 'info');
+                
+                // Simulation of Tencent Cloud / EdgeOne steps
+                setTimeout(() => addLog('Authenticating with Tencent Cloud CAM...'), 500);
+                setTimeout(() => addLog('Uploading static assets to Edge Storage...'), 1200);
+                setTimeout(() => addLog('Triggering Edge Purge on zip2web.edgeone.dev/*', 'info'), 2000);
+                
+                setTimeout(() => {
+                    addLog('Deployment Successful: Nodes synchronized globally.', 'success');
+                    setDeployUrl('https://zip2web.edgeone.dev/');
+                    setStatus('STABLE');
+                }, 3000);
+            };
+
+            const reset = () => {
+                if (fileInputRef.current) fileInputRef.current.value = "";
+                setFileName(''); setStatus('READY'); setDeployUrl('');
+                setLogs([
+                    { msg: '[SYS] Edge Cache Purged.', type: 'info' },
+                    { msg: '[SYS] Connection stable. Ready for new payload.', type: 'normal' }
+                ]);
+            };
+
+            return React.createElement('div', { className: 'kinetic-container animate-in', style: { animationDelay: '0.1s' } },
+                React.createElement('div', { className: 'flex items-center justify-between mb-8' },
+                    React.createElement('h3', { className: 'text-lg font-black text-white italic tracking-tight' }, 'EDGE CONTROL CENTER'),
+                    React.createElement('div', { className: 'flex items-center space-x-2' },
+                        React.createElement('div', { className: `w-2 h-2 rounded-full ${status === 'DEPLOYING' ? 'bg-amber-500 animate-pulse' : status === 'STABLE' ? 'bg-teal-500 shadow-[0_0_10px_#14b8a6]' : 'bg-zinc-800'}` }),
+                        React.createElement('span', { className: 'text-[10px] font-black text-zinc-500 uppercase tracking-widest' }, status)
+                    )
+                ),
+
+                React.createElement('div', { className: 'file-drop relative rounded-2xl p-10 text-center mb-6' },
+                    React.createElement('input', { 
+                        type: 'file', 
+                        className: 'absolute inset-0 w-full h-full opacity-0 cursor-pointer',
+                        onChange: handleFile,
+                        ref: fileInputRef,
+                        accept: '.zip,.html'
+                    }),
+                    React.createElement('i', { className: 'fa-solid fa-server text-3xl text-zinc-700 mb-4' }),
+                    React.createElement('p', { className: 'text-sm font-bold text-zinc-300 m-0' }, fileName || 'Drop Artifact (ZIP / HTML)'),
+                    React.createElement('p', { className: 'text-[10px] text-zinc-600 font-bold uppercase mt-2 tracking-widest' }, 'Direct EdgeOne Ingestion')
+                ),
+
+                React.createElement('div', { className: 'grid grid-cols-1 md:grid-cols-2 gap-4 mb-8' },
+                    React.createElement('button', { 
+                        className: 'deploy-btn py-4 rounded-xl text-white font-black text-xs uppercase tracking-widest flex items-center justify-center space-x-3',
+                        onClick: handleDeploy,
+                        disabled: status === 'DEPLOYING' || !fileName
+                    }, 
+                        status === 'DEPLOYING' ? React.createElement('i', { className: 'fa-solid fa-cloud-arrow-up fa-bounce' }) : React.createElement('i', { className: 'fa-solid fa-globe' }),
+                        React.createElement('span', null, status === 'DEPLOYING' ? 'Deploying to Edge...' : 'Publish to zip2web.edgeone.dev')
+                    ),
+                    React.createElement('button', { 
+                        className: 'py-4 rounded-xl border border-zinc-800 text-zinc-500 hover:text-white hover:bg-zinc-900 transition-all font-black text-xs uppercase tracking-widest flex items-center justify-center space-x-3',
+                        onClick: reset
+                    }, React.createElement('i', { className: 'fa-solid fa-wind' }), React.createElement('span', null, 'Purge Engine'))
+                ),
+
+                React.createElement('div', { className: 'space-y-3' },
+                    React.createElement('div', { className: 'flex items-center space-x-2' },
+                        React.createElement('i', { className: 'fa-solid fa-microchip text-[10px] text-teal-500' }),
+                        React.createElement('span', { className: 'text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em]' }, 'Infrastructure.Uplink')
+                    ),
+                    React.createElement('div', { className: 'terminal-box custom-scrollbar', ref: terminalRef },
+                        logs.map((log, i) => React.createElement('div', { key: i, className: `log-line ${log.type === 'error' ? 'log-error' : log.type === 'success' ? 'log-success' : log.type === 'info' ? 'log-info' : ''}` }, log.msg)),
+                        
+                        deployUrl && React.createElement('div', { className: 'mt-6 p-4 bg-teal-500/10 border border-teal-500/20 rounded-xl animate-in' },
+                            React.createElement('div', { className: 'flex items-center justify-between' },
+                                React.createElement('span', { className: 'text-xs font-black text-teal-400 uppercase tracking-widest' }, 'Global Edge Propagation Complete'),
+                                React.createElement('i', { className: 'fa-solid fa-satellite text-teal-500' })
+                            ),
+                            React.createElement('a', { 
+                                href: deployUrl, 
+                                target: '_blank',
+                                className: 'block w-full text-center py-3 bg-teal-500 text-black font-black text-xs uppercase tracking-widest rounded-lg mt-4 hover:scale-[1.02] transition-transform'
+                            }, 'Visit zip2web.edgeone.dev')
+                        )
+                    )
+                )
+            );
+        };
+
+        const App = () => {
+            return React.createElement('div', { className: 'grid grid-cols-1 lg:grid-cols-12 gap-6' },
+                React.createElement('div', { className: 'lg:col-span-4' }, React.createElement(DeveloperCard, null)),
+                React.createElement('div', { className: 'lg:col-span-8' }, React.createElement(ControlPanel, null))
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(App, null));
+    </script>
+</body>
+</html>
+
