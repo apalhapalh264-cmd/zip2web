@@ -11,7 +11,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Fira+Code:wght@400;500&display=swap');
         
-        body { font-family: 'Inter', sans-serif; background-color: #020202; color: #f3f4f6; margin: 0; padding: 0; overflow-x: hidden; padding-bottom: 80px; }
+        body { font-family: 'Inter', sans-serif; background-color: #020202; color: #f3f4f6; margin: 0; padding: 0; overflow-x: hidden; padding-bottom: 100px; }
 
         .kinetic-container {
             background-color: #080808;
@@ -22,23 +22,17 @@
             position: relative;
         }
 
-        /* Stat Boxes for Developer Card */
         .stat-box {
             background: rgba(20, 184, 166, 0.05);
             border: 1px solid rgba(20, 184, 166, 0.15);
-            padding: 10px 14px;
+            padding: 12px 16px;
             border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 12px;
-            min-width: 140px;
+            flex: 1;
             transition: all 0.2s ease;
-            cursor: pointer;
-        }
-        .stat-box:hover {
-            border-color: rgba(20, 184, 166, 0.4);
-            background: rgba(20, 184, 166, 0.1);
         }
 
         .brand-circle-wrapper {
@@ -62,39 +56,32 @@
             background: linear-gradient(135deg, #14b8a6, #0d9488);
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .deploy-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 0 20px rgba(20, 184, 166, 0.4); }
 
         .log-line { margin-bottom: 4px; border-left: 2px solid #111; padding-left: 10px; }
         .log-success { color: #10b981; border-left-color: #10b981; }
         .log-info { color: #3b82f6; border-left-color: #3b82f6; }
-        .log-warn { color: #f59e0b; border-left-color: #f59e0b; }
 
         .file-drop { border: 2px dashed #222; transition: all 0.3s ease; }
-        .file-drop.active { border-color: #14b8a6; background: rgba(20, 184, 166, 0.05); }
 
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-            display: flex; align-items: center; justify-content: center; z-index: 100;
-            backdrop-filter: blur(8px);
-        }
-
-        /* Bottom Navigation */
+        /* Navigation Bar */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(8, 8, 8, 0.95);
-            border-top: 1px solid #1a1a1a;
-            padding: 12px 24px;
-            display: flex; justify-content: center; gap: 40px;
-            z-index: 50;
+            background: #080808; border-top: 1px solid #1a1a1a;
+            padding: 16px; display: flex; justify-content: center; gap: 60px;
+            z-index: 1000;
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center;
+            color: #444; font-size: 10px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .nav-item.active { color: #14b8a6; }
+
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            display: flex; align-items: center; justify-content: center; z-index: 2000;
             backdrop-filter: blur(10px);
         }
-        .nav-btn {
-            display: flex; flex-direction: column; align-items: center;
-            color: #52525b; font-size: 10px; font-weight: 800; text-transform: uppercase;
-            letter-spacing: 0.1em; transition: all 0.2s ease;
-        }
-        .nav-btn.active { color: #14b8a6; }
-        .nav-btn i { font-size: 18px; margin-bottom: 4px; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col p-4 md:p-8">
@@ -104,35 +91,21 @@
             <div class="w-10 h-10 bg-teal-500/20 border border-teal-500/40 rounded-xl flex items-center justify-center">
                 <i class="fa-solid fa-bolt-lightning text-teal-400"></i>
             </div>
-            <div>
-                <h1 class="text-2xl font-black text-white uppercase italic">ZIP2<span class="text-teal-500">WEB</span></h1>
-                <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">EdgeOne Cloud Interface</p>
-            </div>
-        </div>
-        <div class="hidden md:block text-right">
-            <p class="text-[10px] text-zinc-500 font-bold uppercase">License Tier</p>
-            <p class="text-xs font-bold text-teal-500 uppercase">Standard (30D Limit)</p>
+            <h1 class="text-2xl font-black text-white uppercase italic">ZIP2<span class="text-teal-500">WEB</span></h1>
         </div>
     </header>
 
     <main id="root" class="max-w-6xl mx-auto w-full flex-1"></main>
 
-    <footer class="mt-12 text-center">
-        <p class="text-[10px] text-zinc-700 font-black uppercase tracking-[0.4em]">
-            ZIP2WEB Engine • Licensed to zimob • EdgeOne Dev
-        </p>
-    </footer>
-
-    <!-- Bottom Navigation Bar -->
     <nav class="bottom-nav">
-        <button class="nav-btn active">
-            <i class="fa-solid fa-server"></i>
+        <div class="nav-item active">
+            <i class="fa-solid fa-server mb-1 text-xl"></i>
             <span>Hosting</span>
-        </button>
-        <button class="nav-btn" onclick="console.log('Open Account')">
-            <i class="fa-solid fa-user-gear"></i>
+        </div>
+        <div class="nav-item">
+            <i class="fa-solid fa-user mb-1 text-xl"></i>
             <span>Account</span>
-        </button>
+        </div>
     </nav>
 
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -143,17 +116,14 @@
 
         const App = () => {
             const [status, setStatus] = useState('READY');
-            const [logs, setLogs] = useState([{ msg: '[SYS] EdgeOne Uplink Active. Policy: 30-Day Auto-Expire.', type: 'info' }]);
-            const [deployData, setDeployData] = useState(null);
+            const [logs, setLogs] = useState([{ msg: '[SYS] Uplink Secure. Ready for Deployment.', type: 'info' }]);
+            const [deployUrl, setDeployUrl] = useState('');
             const [fileName, setFileName] = useState('');
-            const [fileObject, setFileObject] = useState(null);
-            const [showExpireModal, setShowExpireModal] = useState(false);
-            
-            // Stats initialized as per request
+            const [fileObj, setFileObj] = useState(null);
             const [points, setPoints] = useState(0);
-            const [limits, setLimits] = useState(5);
-
-            const fileInputRef = useRef(null);
+            const [credit, setCredit] = useState(5);
+            const [isExpired, setIsExpired] = useState(false);
+            
             const terminalRef = useRef(null);
 
             useEffect(() => {
@@ -165,190 +135,118 @@
                 setLogs(prev => [...prev, { msg: `[${time}] ${msg}`, type }]);
             };
 
-            const handleFileSelection = (e) => {
+            const onFileSelect = (e) => {
                 const file = e.target.files[0];
-                if (!file) return;
-                setFileName(file.name);
-                setFileObject(file);
-                addLog(`Target Identified: ${file.name}`);
-                setDeployData(null);
-                setStatus('READY');
+                if (file) {
+                    setFileName(file.name);
+                    setFileObj(file);
+                    addLog(`Payload Ready: ${file.name}`);
+                }
             };
 
-            const executeDeploy = async () => {
-                if (!fileObject) return;
-                if (limits <= 0) {
-                    addLog('!! DEPLOYMENT BLOCKED: CREDIT DEPLETED', 'error');
-                    setShowExpireModal(true);
+            const deploy = async () => {
+                if (!fileObj) return;
+                if (credit <= 0) {
+                    setIsExpired(true);
                     return;
                 }
 
                 setStatus('DEPLOYING');
-                addLog('Connecting to EdgeOne Secure Tunnel...', 'info');
+                addLog('Initiating EdgeOne Handshake...', 'info');
 
-                try {
-                    const randomCode = Math.random().toString(36).substring(2, 12).toUpperCase();
-                    const webName = "zip2web";
-                    let internalUrl = "";
-
-                    const expireDate = new Date();
-                    expireDate.setDate(expireDate.getDate() + 30);
-
-                    if (fileObject.name.endsWith('.zip')) {
+                // Simulate the backend hosting process
+                setTimeout(async () => {
+                    const randomCode = Math.random().toString(36).substring(2, 10).toUpperCase();
+                    // THE CLEAN URL: No "blob:" prefix. 100% realistic.
+                    const finalUrl = `https://zip2web.edgeone.dev/?deploy/${randomCode}/${fileName}`;
+                    
+                    // Store the data in session storage for the virtual router
+                    let content;
+                    if (fileObj.name.endsWith('.zip')) {
                         const zip = new JSZip();
-                        const content = await zip.loadAsync(fileObject);
-                        const indexFile = Object.keys(content.files).find(name => name.toLowerCase().endsWith('index.html'));
-                        
-                        if (indexFile) {
-                            const blob = await content.files[indexFile].async("blob");
-                            internalUrl = URL.createObjectURL(blob);
-                        } else {
-                            const firstFile = Object.keys(content.files)[0];
-                            const blob = await content.files[firstFile].async("blob");
-                            internalUrl = URL.createObjectURL(blob);
-                        }
+                        const zipData = await zip.loadAsync(fileObj);
+                        const index = Object.keys(zipData.files).find(f => f.toLowerCase().endsWith('index.html'));
+                        content = await zipData.files[index || Object.keys(zipData.files)[0]].async("blob");
                     } else {
-                        internalUrl = URL.createObjectURL(fileObject);
+                        content = fileObj;
                     }
 
-                    setTimeout(() => {
-                        addLog('Applying 30-day lifecycle policy...', 'warn');
-                        setTimeout(() => {
-                            const visualUrl = `https://${webName}.edgeone.dev/?deploy/${randomCode}/${fileObject.name}`;
-                            addLog(`Live Link: ${visualUrl}`, 'success');
+                    // Create a real blob URL but ONLY use it for the window.open action
+                    // The visual display will remain perfectly clean
+                    const secretBlob = URL.createObjectURL(content);
+
+                    addLog('Edge Node Propagation Complete.', 'success');
+                    addLog(`URL: ${finalUrl}`, 'success');
+                    
+                    setDeployUrl({ visual: finalUrl, real: secretBlob });
+                    setCredit(c => c - 1);
+                    setPoints(p => p + 100);
+                    setStatus('STABLE');
+                }, 1500);
+            };
+
+            return React.createElement('div', { className: 'grid grid-cols-1 lg:grid-cols-12 gap-8' },
+                // Left Card
+                React.createElement('div', { className: 'lg:col-span-4' },
+                    React.createElement('div', { className: 'kinetic-container flex flex-col items-center justify-center py-20' },
+                        React.createElement('div', { className: 'absolute top-6 left-6 right-6 flex gap-4' },
+                            React.createElement('div', { className: 'stat-box' },
+                                React.createElement('span', { className: 'text-[9px] font-black text-zinc-500 uppercase' }, `Points: ${points}`),
+                                React.createElement('i', { className: 'fa-solid fa-chevron-right text-[8px] text-zinc-700' })
+                            ),
+                            React.createElement('div', { className: 'stat-box' },
+                                React.createElement('span', { className: 'text-[9px] font-black text-zinc-500 uppercase' }, `Remaining Credit: ${credit}`),
+                                React.createElement('i', { className: 'fa-solid fa-chevron-right text-[8px] text-zinc-700' })
+                            )
+                        ),
+                        React.createElement('div', { className: 'brand-circle-wrapper mb-8 mt-4' },
+                            React.createElement('div', { className: 'brand-circle' },
+                                React.createElement('img', { src: 'https://i.imgur.com/cPwxT0y.png' })
+                            )
+                        ),
+                        React.createElement('h2', { className: 'text-2xl font-black text-white' }, 'zimob'),
+                        React.createElement('p', { className: 'text-teal-500 text-[10px] font-bold uppercase tracking-[0.3em] mt-1' }, 'Minotaur Architect')
+                    )
+                ),
+
+                // Right Terminal
+                React.createElement('div', { className: 'lg:col-span-8' },
+                    React.createElement('div', { className: 'kinetic-container' },
+                        React.createElement('div', { className: `file-drop relative rounded-3xl p-12 text-center mb-6 border-2 border-dashed ${fileName ? 'border-teal-500 bg-teal-500/5' : 'border-zinc-900'}` },
+                            React.createElement('input', { type: 'file', className: 'absolute inset-0 opacity-0 cursor-pointer', onChange: onFileSelect }),
+                            React.createElement('i', { className: `fa-solid ${fileName ? 'fa-file-zipper text-teal-400' : 'fa-upload text-zinc-800'} text-5xl mb-4` }),
+                            React.createElement('p', { className: 'text-zinc-400 font-bold' }, fileName || 'Select Site Package (ZIP/HTML)')
+                        ),
+
+                        React.createElement('button', { 
+                            onClick: deploy, 
+                            disabled: !fileObj || status === 'DEPLOYING',
+                            className: 'w-full py-5 bg-teal-500 text-black font-black uppercase text-xs tracking-[0.2em] rounded-2xl mb-8'
+                        }, status === 'DEPLOYING' ? 'Processing Node...' : 'Deploy to EdgeOne'),
+
+                        React.createElement('div', { className: 'terminal-box', ref: terminalRef },
+                            logs.map((l, i) => React.createElement('div', { key: i, className: `log-line ${l.type === 'success' ? 'log-success' : l.type === 'info' ? 'log-info' : ''}` }, l.msg)),
                             
-                            setDeployData({ 
-                                visual: visualUrl, 
-                                real: internalUrl,
-                                expires: expireDate.getTime()
-                            });
-                            setLimits(prev => prev - 1);
-                            setPoints(prev => prev + 50);
-                            setStatus('STABLE');
-                        }, 1000);
-                    }, 800);
-
-                } catch (err) {
-                    addLog(`DEPLOYMENT FAILED: ${err.message}`, 'error');
-                    setStatus('READY');
-                }
-            };
-
-            const handleLaunch = (e) => {
-                e.preventDefault();
-                if (!deployData) return;
-                window.open(deployData.real, '_blank');
-            };
-
-            const resetState = () => {
-                setShowExpireModal(false);
-                setDeployData(null);
-                setFileName('');
-                setFileObject(null);
-                setStatus('READY');
-            };
-
-            return React.createElement('div', null,
-                React.createElement('div', { className: 'grid grid-cols-1 lg:grid-cols-12 gap-6' },
-                    // Left Column (Developer Card)
-                    React.createElement('div', { className: 'lg:col-span-4' },
-                        React.createElement('div', { className: 'kinetic-container h-full flex flex-col justify-center items-center py-16' },
-                            // Top Stats Boxes
-                            React.createElement('div', { className: 'absolute top-6 left-6 right-6 flex justify-between gap-2' },
-                                React.createElement('div', { className: 'stat-box flex-1' },
-                                    React.createElement('div', { className: 'flex items-center gap-2' },
-                                        React.createElement('i', { className: 'fa-solid fa-star text-[10px] text-teal-400' }),
-                                        React.createElement('span', { className: 'text-[10px] font-black text-zinc-400 uppercase tracking-tighter' }, `Points: ${points}`)
-                                    ),
-                                    React.createElement('i', { className: 'fa-solid fa-chevron-right text-[8px] text-zinc-600' })
-                                ),
-                                React.createElement('div', { className: 'stat-box flex-1' },
-                                    React.createElement('div', { className: 'flex items-center gap-2' },
-                                        React.createElement('i', { className: 'fa-solid fa-wallet text-[10px] text-teal-400' }),
-                                        React.createElement('span', { className: 'text-[10px] font-black text-zinc-400 uppercase tracking-tighter' }, `Remaining Credit: ${limits}`)
-                                    ),
-                                    React.createElement('i', { className: 'fa-solid fa-chevron-right text-[8px] text-zinc-600' })
-                                )
-                            ),
-                            
-                            React.createElement('div', { className: 'brand-circle-wrapper mb-8 mt-6' },
-                                React.createElement('div', { className: 'brand-circle' },
-                                    React.createElement('img', { src: 'https://i.imgur.com/cPwxT0y.png', alt: 'zimob' })
-                                )
-                            ),
-                            React.createElement('h2', { className: 'text-2xl font-black text-white mb-1' }, 'zimob'),
-                            React.createElement('p', { className: 'text-teal-500 text-[10px] font-bold uppercase tracking-[0.3em]' }, 'Minotaur Architect')
-                        )
-                    ),
-
-                    // Right Column (Control Panel)
-                    React.createElement('div', { className: 'lg:col-span-8' },
-                        React.createElement('div', { className: 'kinetic-container' },
-                            React.createElement('div', { className: 'flex justify-between items-center mb-6' },
-                                React.createElement('h3', { className: 'text-xs font-black text-zinc-500 uppercase tracking-widest' }, 'EdgeOne Control'),
-                                React.createElement('span', { className: `text-[10px] font-bold px-2 py-0.5 rounded border ${status === 'STABLE' ? 'border-teal-500 text-teal-500' : 'border-zinc-800 text-zinc-600'}` }, status)
-                            ),
-
-                            React.createElement('div', { className: `file-drop relative rounded-2xl p-8 text-center mb-6 border-2 transition-all ${fileName ? 'border-teal-500/50 bg-teal-500/5' : 'border-zinc-900 border-dashed'}` },
-                                React.createElement('input', { 
-                                    type: 'file', className: 'absolute inset-0 w-full h-full opacity-0 cursor-pointer',
-                                    onChange: handleFileSelection, ref: fileInputRef, accept: '.zip,.html'
-                                }),
-                                React.createElement('i', { className: `fa-solid ${fileName ? 'fa-box-open text-teal-400' : 'fa-upload text-zinc-800'} text-4xl mb-4` }),
-                                React.createElement('p', { className: 'text-sm font-bold text-zinc-300' }, fileName || 'Drop Payload (ZIP / HTML)'),
-                                React.createElement('p', { className: 'text-[9px] text-zinc-600 uppercase mt-2 font-bold tracking-widest' }, 'Global Node Synchronization')
-                            ),
-
-                            React.createElement('button', { 
-                                className: 'w-full deploy-btn py-4 rounded-xl text-black font-black text-xs uppercase tracking-widest mb-6 flex items-center justify-center space-x-2',
-                                onClick: executeDeploy,
-                                disabled: status === 'DEPLOYING' || !fileObject
-                            }, 
-                                React.createElement('i', { className: `fa-solid ${status === 'DEPLOYING' ? 'fa-spinner fa-spin' : 'fa-rocket'}` }),
-                                React.createElement('span', null, status === 'DEPLOYING' ? 'Transmitting...' : 'Deploy to EdgeOne')
-                            ),
-
-                            React.createElement('div', { className: 'terminal-box custom-scrollbar mb-4', ref: terminalRef },
-                                logs.map((log, i) => React.createElement('div', { key: i, className: `log-line ${log.type === 'success' ? 'log-success' : log.type === 'info' ? 'log-info' : log.type === 'warn' ? 'log-warn' : ''}` }, log.msg)),
-                                
-                                deployData && React.createElement('div', { className: 'mt-6 p-5 bg-teal-500/10 border border-teal-500/30 rounded-xl animate-up' },
-                                    React.createElement('div', { className: 'flex justify-between items-center mb-3' },
-                                        React.createElement('p', { className: 'text-[10px] font-black text-teal-500 uppercase tracking-widest' }, 'Live Production Link'),
-                                        React.createElement('span', { className: 'text-[9px] text-amber-500 font-bold italic' }, 'Expires in 30 Days')
-                                    ),
-                                    React.createElement('div', { className: 'bg-black/60 p-4 rounded-lg border border-zinc-800' },
-                                        React.createElement('a', { 
-                                            href: '#', 
-                                            onClick: handleLaunch,
-                                            className: 'text-white hover:text-teal-400 text-xs font-mono transition-colors flex items-start gap-2 break-all'
-                                        }, 
-                                            React.createElement('i', { className: 'fa-solid fa-link mt-1 text-teal-500' }),
-                                            deployData.visual
-                                        )
-                                    )
-                                )
+                            deployUrl && React.createElement('div', { className: 'mt-8 p-6 bg-black border border-zinc-800 rounded-2xl' },
+                                React.createElement('p', { className: 'text-[10px] text-teal-500 font-black uppercase mb-3' }, 'Production URL:'),
+                                React.createElement('a', { 
+                                    href: '#', 
+                                    onClick: (e) => { e.preventDefault(); window.open(deployUrl.real, '_blank'); },
+                                    className: 'text-white text-xs font-mono block hover:text-teal-400'
+                                }, deployUrl.visual)
                             )
                         )
                     )
                 ),
 
-                // Expiration Modal
-                showExpireModal && React.createElement('div', { className: 'modal-overlay' },
-                    React.createElement('div', { className: 'bg-zinc-950 border border-teal-500/50 p-10 rounded-[2rem] max-w-md w-full text-center shadow-[0_0_100px_rgba(20,184,166,0.2)] mx-4' },
-                        React.createElement('div', { className: 'w-20 h-20 bg-teal-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-teal-500/20' },
-                            React.createElement('i', { className: 'fa-solid fa-hourglass-end text-3xl text-teal-500' })
-                        ),
+                // Limit Modal
+                isExpired && React.createElement('div', { className: 'modal-overlay' },
+                    React.createElement('div', { className: 'bg-zinc-950 border border-teal-900 p-12 rounded-[3rem] text-center max-w-sm' },
                         React.createElement('h3', { className: 'text-xl font-black text-white mb-4 italic' }, 'Oops, your website has reached its limit.'),
-                        React.createElement('p', { className: 'text-zinc-400 text-sm mb-8 leading-relaxed' }, 'Please upgrade to enjoy premium features and keep your site online 24/7 without limits.'),
-                        React.createElement('div', { className: 'flex flex-col sm:flex-row gap-4' },
-                            React.createElement('button', { 
-                                onClick: resetState,
-                                className: 'flex-1 py-4 bg-zinc-900 text-zinc-300 font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-zinc-800 transition-colors'
-                            }, 'Return to Lobby'),
-                            React.createElement('button', { 
-                                onClick: () => addLog('Redirecting to Payment Gateway...', 'info'),
-                                className: 'flex-1 py-4 bg-teal-500 text-black font-black text-xs uppercase tracking-widest rounded-xl hover:scale-105 transition-transform'
-                            }, 'Upgrade Now')
+                        React.createElement('p', { className: 'text-zinc-500 text-xs mb-8' }, 'Please upgrade to enjoy premium features!'),
+                        React.createElement('div', { className: 'flex gap-3' },
+                            React.createElement('button', { onClick: () => setIsExpired(false), className: 'flex-1 py-4 bg-zinc-900 text-white text-[10px] font-bold uppercase rounded-xl' }, 'Return to Lobby'),
+                            React.createElement('button', { className: 'flex-1 py-4 bg-teal-500 text-black text-[10px] font-black uppercase rounded-xl' }, 'Upgrade')
                         )
                     )
                 )
@@ -356,7 +254,7 @@
         };
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(React.createElement(App, null));
+        root.render(React.createElement(App));
     </script>
 </body>
 </html>
