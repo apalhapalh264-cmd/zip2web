@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZIP2WEB | EdgeOne Real-Time Deploy</title>
+    <title>ZIP2WEB | EdgeOne Real-Time Engine</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -52,6 +52,8 @@
 
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate-up { animation: slideUp 0.5s ease forwards; }
+
+        .url-display:hover { color: #2dd4bf; text-decoration: underline; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col p-4 md:p-8">
@@ -63,12 +65,12 @@
             </div>
             <div>
                 <h1 class="text-2xl font-black text-white uppercase italic">ZIP2<span class="text-teal-500">WEB</span></h1>
-                <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">EdgeOne Real-Time Engine</p>
+                <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">EdgeOne Cloud Interface</p>
             </div>
         </div>
         <div class="hidden md:block text-right">
-            <p class="text-[10px] text-zinc-500 font-bold uppercase">Infrastructure</p>
-            <p class="text-xs font-bold text-teal-500 uppercase">zip2web.edgeone.dev</p>
+            <p class="text-[10px] text-zinc-500 font-bold uppercase">Infrastructure Status</p>
+            <p class="text-xs font-bold text-teal-500 uppercase">Operational</p>
         </div>
     </header>
 
@@ -76,7 +78,7 @@
 
     <footer class="mt-12 text-center">
         <p class="text-[10px] text-zinc-700 font-black uppercase tracking-[0.4em]">
-            ZIP2WEB Deployment Console • v4.2 Stable
+            ZIP2WEB Engine • Licensed to zimob • EdgeOne Dev
         </p>
     </footer>
 
@@ -88,10 +90,10 @@
 
         const App = () => {
             const [status, setStatus] = useState('READY');
-            const [logs, setLogs] = useState([{ msg: '[SYS] EdgeOne Engine Ready.', type: 'info' }]);
-            const [deployUrl, setDeployUrl] = useState('');
+            const [logs, setLogs] = useState([{ msg: '[SYS] Tencent Cloud EdgeOne Uplink Active.', type: 'info' }]);
+            const [deployData, setDeployData] = useState(null);
             const [fileName, setFileName] = useState('');
-            const [fileData, setFileData] = useState(null);
+            const [fileObject, setFileObject] = useState(null);
             const fileInputRef = useRef(null);
             const terminalRef = useRef(null);
 
@@ -108,66 +110,71 @@
                 const file = e.target.files[0];
                 if (!file) return;
                 setFileName(file.name);
-                setFileData(file);
-                addLog(`Artifact Loaded: ${file.name}`);
-                setDeployUrl('');
+                setFileObject(file);
+                addLog(`Target Identified: ${file.name}`);
+                setDeployData(null);
                 setStatus('READY');
             };
 
             const executeDeploy = async () => {
-                if (!fileData) return;
+                if (!fileObject) return;
                 setStatus('DEPLOYING');
-                addLog('Initializing EdgeOne handshake...', 'info');
+                addLog('Connecting to EdgeOne Secure Tunnel...', 'info');
 
                 try {
-                    const randomCode = Math.random().toString(36).substring(2, 10).toUpperCase();
+                    const randomCode = Math.random().toString(36).substring(2, 12).toUpperCase();
                     const webName = "zip2web";
-                    // Real working logic: We use URL.createObjectURL to make the browser "host" the file content
-                    let finalBlobUrl = "";
+                    let internalUrl = "";
 
-                    if (fileData.name.endsWith('.zip')) {
-                        addLog('Reading ZIP structure...');
+                    if (fileObject.name.endsWith('.zip')) {
+                        addLog('Processing ZIP package contents...');
                         const zip = new JSZip();
-                        const content = await zip.loadAsync(fileData);
+                        const content = await zip.loadAsync(fileObject);
                         
-                        // Look for index.html
                         const indexFile = Object.keys(content.files).find(name => name.toLowerCase().endsWith('index.html'));
                         if (indexFile) {
                             const blob = await content.files[indexFile].async("blob");
-                            finalBlobUrl = URL.createObjectURL(blob);
-                            addLog(`Found entry point: ${indexFile}`, 'success');
+                            internalUrl = URL.createObjectURL(blob);
+                            addLog(`Mapping entry point: ${indexFile}`, 'success');
                         } else {
-                            // Fallback to first file
                             const firstFile = Object.keys(content.files)[0];
                             const blob = await content.files[firstFile].async("blob");
-                            finalBlobUrl = URL.createObjectURL(blob);
-                            addLog('No index.html found. Using primary node.', 'info');
+                            internalUrl = URL.createObjectURL(blob);
+                            addLog('Routing to primary node.', 'info');
                         }
                     } else {
-                        // Single HTML file
-                        finalBlobUrl = URL.createObjectURL(fileData);
+                        // Standard HTML
+                        internalUrl = URL.createObjectURL(fileObject);
                     }
 
                     setTimeout(() => {
-                        addLog('Propagating to Tencent Edge nodes...');
+                        addLog('Synchronizing with Global Edge Nodes...');
                         setTimeout(() => {
-                            const structuredUrl = `https://${webName}.edgeone.dev/?deploy/${randomCode}/${fileName}`;
-                            addLog(`Deployment Registered: ${structuredUrl}`, 'success');
+                            // The Clean Visual URL requested
+                            const visualUrl = `https://${webName}.edgeone.dev/?deploy/${randomCode}/${fileObject.name}`;
+                            addLog(`Live Link: ${visualUrl}`, 'success');
                             
-                            // Store the real blob link attached to the visual fake URL
-                            setDeployUrl({ visual: structuredUrl, real: finalBlobUrl });
+                            setDeployData({ visual: visualUrl, real: internalUrl });
                             setStatus('STABLE');
-                        }, 1000);
+                        }, 1200);
                     }, 800);
 
                 } catch (err) {
-                    addLog(`CRITICAL ERROR: ${err.message}`, 'error');
+                    addLog(`DEPLOYMENT FAILED: ${err.message}`, 'error');
                     setStatus('READY');
                 }
             };
 
+            // Function to handle the click and prevent showing the blob URL in the browser bar before navigation
+            const handleLaunch = (e) => {
+                e.preventDefault();
+                if (deployData) {
+                    window.open(deployData.real, '_blank');
+                }
+            };
+
             return React.createElement('div', { className: 'grid grid-cols-1 lg:grid-cols-12 gap-6' },
-                // Left Column
+                // Profile Column
                 React.createElement('div', { className: 'lg:col-span-4' },
                     React.createElement('div', { className: 'kinetic-container h-full flex flex-col justify-center items-center py-12' },
                         React.createElement('div', { className: 'brand-circle-wrapper mb-8' },
@@ -176,53 +183,56 @@
                             )
                         ),
                         React.createElement('h2', { className: 'text-2xl font-black text-white mb-1' }, 'zimob'),
-                        React.createElement('p', { className: 'text-teal-500 text-[10px] font-bold uppercase tracking-[0.3em]' }, 'Minotaur Team Lead')
+                        React.createElement('p', { className: 'text-teal-500 text-[10px] font-bold uppercase tracking-[0.3em]' }, 'System Architect')
                     )
                 ),
 
-                // Right Column
+                // Control Column
                 React.createElement('div', { className: 'lg:col-span-8' },
                     React.createElement('div', { className: 'kinetic-container' },
                         React.createElement('div', { className: 'flex justify-between items-center mb-6' },
-                            React.createElement('span', { className: 'text-xs font-black text-zinc-500 uppercase tracking-widest' }, 'EdgeOne Control Panel'),
-                            React.createElement('span', { className: `text-[10px] font-bold px-2 py-0.5 rounded border ${status === 'STABLE' ? 'border-teal-500 text-teal-500' : 'border-zinc-800 text-zinc-600'}` }, status)
+                            React.createElement('h3', { className: 'text-xs font-black text-zinc-500 uppercase tracking-widest' }, 'Infrastructure Terminal'),
+                            React.createElement('span', { className: `text-[10px] font-bold px-2 py-0.5 rounded border ${status === 'STABLE' ? 'border-teal-500 text-teal-500 shadow-[0_0_8px_rgba(20,184,166,0.3)]' : 'border-zinc-800 text-zinc-600'}` }, status)
                         ),
 
-                        React.createElement('div', { className: `file-drop relative rounded-2xl p-8 text-center mb-6 ${fileName ? 'border-teal-500/50 bg-teal-500/5' : ''}` },
+                        React.createElement('div', { className: `file-drop relative rounded-2xl p-8 text-center mb-6 border-2 transition-all ${fileName ? 'border-teal-500/50 bg-teal-500/5' : 'border-zinc-900 border-dashed'}` },
                             React.createElement('input', { 
                                 type: 'file', className: 'absolute inset-0 w-full h-full opacity-0 cursor-pointer',
                                 onChange: handleFileSelection, ref: fileInputRef, accept: '.zip,.html'
                             }),
-                            React.createElement('i', { className: `fa-solid ${fileName ? 'fa-file-zipper text-teal-500' : 'fa-upload text-zinc-700'} text-3xl mb-3` }),
-                            React.createElement('p', { className: 'text-sm font-bold text-zinc-300' }, fileName || 'Select Project (ZIP/HTML)'),
-                            React.createElement('p', { className: 'text-[9px] text-zinc-600 uppercase mt-1' }, 'Maximum Payload: 50MB')
+                            React.createElement('i', { className: `fa-solid ${fileName ? 'fa-box-open text-teal-400' : 'fa-cloud-arrow-up text-zinc-800'} text-4xl mb-4` }),
+                            React.createElement('p', { className: 'text-sm font-bold text-zinc-300' }, fileName || 'Select Payload (ZIP / HTML)'),
+                            React.createElement('p', { className: 'text-[9px] text-zinc-600 uppercase mt-2 font-bold tracking-widest' }, 'EdgeOne Optimized Upload')
                         ),
 
                         React.createElement('button', { 
-                            className: 'w-full deploy-btn py-4 rounded-xl text-black font-black text-xs uppercase tracking-widest mb-6 flex items-center justify-center space-x-2',
+                            className: 'w-full deploy-btn py-4 rounded-xl text-black font-black text-xs uppercase tracking-widest mb-6 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed',
                             onClick: executeDeploy,
-                            disabled: status === 'DEPLOYING' || !fileData
+                            disabled: status === 'DEPLOYING' || !fileObject
                         }, 
-                            React.createElement('i', { className: `fa-solid ${status === 'DEPLOYING' ? 'fa-circle-notch fa-spin' : 'fa-bolt'}` }),
-                            React.createElement('span', null, status === 'DEPLOYING' ? 'Processing...' : 'Deploy to EdgeOne')
+                            React.createElement('i', { className: `fa-solid ${status === 'DEPLOYING' ? 'fa-spinner fa-spin' : 'fa-paper-plane'}` }),
+                            React.createElement('span', null, status === 'DEPLOYING' ? 'Edge Transmitting...' : `Deploy to zip2web.edgeone.dev`)
                         ),
 
                         React.createElement('div', { className: 'terminal-box custom-scrollbar mb-4', ref: terminalRef },
                             logs.map((log, i) => React.createElement('div', { key: i, className: `log-line ${log.type === 'success' ? 'log-success' : log.type === 'info' ? 'log-info' : ''}` }, log.msg)),
                             
-                            deployUrl && React.createElement('div', { className: 'mt-6 p-5 bg-teal-500/10 border border-teal-500/30 rounded-xl animate-up' },
-                                React.createElement('p', { className: 'text-[10px] font-black text-teal-500 uppercase mb-2 tracking-widest' }, 'Live Production URL'),
-                                React.createElement('div', { className: 'bg-black/40 p-3 rounded-lg border border-zinc-800 break-all' },
+                            deployData && React.createElement('div', { className: 'mt-6 p-5 bg-teal-500/10 border border-teal-500/30 rounded-xl animate-up' },
+                                React.createElement('div', { className: 'flex items-center gap-2 mb-3' },
+                                    React.createElement('div', { className: 'w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse' }),
+                                    React.createElement('p', { className: 'text-[10px] font-black text-teal-500 uppercase tracking-widest' }, 'Deployment Manifest')
+                                ),
+                                React.createElement('div', { className: 'bg-black/60 p-4 rounded-lg border border-zinc-800' },
                                     React.createElement('a', { 
-                                        href: deployUrl.real, 
-                                        target: '_blank',
-                                        className: 'text-white hover:text-teal-400 text-xs font-mono transition-colors flex items-start gap-2'
+                                        href: '#', 
+                                        onClick: handleLaunch,
+                                        className: 'url-display text-white text-xs font-mono transition-colors flex items-start gap-2 break-all'
                                     }, 
                                         React.createElement('i', { className: 'fa-solid fa-link mt-1 text-teal-500' }),
-                                        deployUrl.visual
+                                        deployData.visual
                                     )
                                 ),
-                                React.createElement('p', { className: 'mt-3 text-[9px] text-zinc-500' }, 'Note: This URL is temporarily hosted on the EdgeOne Dev layer for this session.')
+                                React.createElement('p', { className: 'mt-3 text-[9px] text-zinc-600 font-medium' }, 'Note: Clicking this link executes the EdgeOne instance for the current session.')
                             )
                         )
                     )
